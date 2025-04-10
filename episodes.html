@@ -8,16 +8,6 @@
   <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <style>
-    body {<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Episodes</title>
-  <link rel="stylesheet" href="all.min.css">
-  <!-- Plyr CSS -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-  <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #1a1a1a;
@@ -107,217 +97,28 @@
 
         // Video URL ကို သတ်မှတ်ပါ
         const videoSource = document.getElementById('video-source');
-        // API ကနေ videoUrl မပြန်ပေးသေးတာကြောင့် ယာယီ URL သုံးထားပါတယ်
-        videoSource.src = content.videoUrl || 'https://www.w3schools.com/html/mov_bbb.mp4';
-        player.source = {
-          type: 'video',
-          sources: [
-            {
-              src: videoSource.src,
-              type: 'video/mp4'
-            }
-          ]
-        };
+        if (content.videoUrl) {
+          videoSource.src = content.videoUrl;
+          player.source = {
+            type: 'video',
+            sources: [
+              {
+                src: videoSource.src,
+                type: 'video/mp4'
+              }
+            ]
+          };
+        } else {
+          alert('No video URL found in the API response. Please add videoUrl field in the backend API.');
+          videoSource.src = ''; // Video URL မရှိရင် ဘာမှ မဖွင့်ပါ
+        }
       } catch (error) {
         console.error(`Error fetching ${contentType} details:`, error);
         alert(`Error fetching ${contentType} details: ${error.message}`);
-        // Error ဖြစ်ရင် ယာယီ video URL ကို သုံးပါ
-        const videoSource = document.getElementById('video-source');
-        videoSource.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
-        player.source = {
-          type: 'video',
-          sources: [
-            {
-              src: videoSource.src,
-              type: 'video/mp4'
-            }
-          ]
-        };
         const titleElement = document.getElementById('content-title');
-        titleElement.textContent = 'Sample Video';
-      }
-    }
-
-    async function fetchEpisodes() {
-      try {
-        const response = await fetch(`${API_URL}/api/${contentType}s/${contentId}/episodes`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch episodes: ${response.status}`);
-        }
-        const episodes = await response.json();
-        console.log('Episodes:', episodes); // Debug လုပ်ဖို့
-
-        const episodeList = document.getElementById('episode-list');
-        episodeList.innerHTML = ''; // Clear existing content
-        episodes.forEach(episode => {
-          const episodeItem = document.createElement('div');
-          episodeItem.class
-
-Name = 'episode-item';
-          episodeItem.textContent = episode.title || `Episode ${episode.id}`;
-          episodeItem.onclick = () => {
-            // Episode တစ်ခုကို နှိပ်တဲ့အခါ video URL ကို ပြောင်းပါ
-            const videoSource = document.getElementById('video-source');
-            videoSource.src = episode.videoUrl || 'https://www.w3schools.com/html/mov_bbb.mp4';
-            player.source = {
-              type: 'video',
-              sources: [
-                {
-                  src: videoSource.src,
-                  type: 'video/mp4'
-                }
-              ]
-            };
-            player.play();
-          };
-          episodeList.appendChild(episodeItem);
-        });
-      } catch (error) {
-        console.error('Error fetching episodes:', error);
-        // Episodes endpoint မရှိသေးတာကြောင့် ယာယီ episodes စာရင်းတစ်ခု ပြပါ
-        const episodeList = document.getElementById('episode-list');
-        episodeList.innerHTML = ''; // Clear existing content
-        const mockEpisodes = [
-          { id: 1, title: 'Episode 1', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-          { id: 2, title: 'Episode 2', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
-        ];
-        mockEpisodes.forEach(episode => {
-          const episodeItem = document.createElement('div');
-          episodeItem.className = 'episode-item';
-          episodeItem.textContent = episode.title;
-          episodeItem.onclick = () => {
-            const videoSource = document.getElementById('video-source');
-            videoSource.src = episode.videoUrl;
-            player.source = {
-              type: 'video',
-              sources: [
-                {
-                  src: videoSource.src,
-                  type: 'video/mp4'
-                }
-              ]
-            };
-            player.play();
-          };
-          episodeList.appendChild(episodeItem);
-        });
-      }
-    }
-
-    // Page ဖွင့်တာနဲ့ အသေးစိတ်အချက်အလက်နဲ့ episodes တွေကို ခေါ်ပါ
-    window.onload = () => {
-      if (!contentId || !contentType) {
-        alert('Invalid content ID or type');
-        return;
-      }
-      fetchContentDetails();
-      fetchEpisodes();
-    };
-  </script>
-</body>
-</html>
-      font-family: Arial, sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
-      margin: 0;
-      padding: 20px;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    #player-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .plyr {
-      border-radius: 8px;
-    }
-    #episode-list {
-      margin-top: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .episode-item {
-      cursor: pointer;
-      padding: 10px;
-      background-color: #333;
-      margin: 5px 0;
-      border-radius: 5px;
-    }
-    .episode-item:hover {
-      background-color: #444;
-    }
-  </style>
-</head>
-<body>
-  <h1 id="content-title">Loading...</h1>
-  <div id="player-container">
-    <video id="video-player" playsinline controls>
-      <source id="video-source" src="" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
-  <h2>Episodes</h2>
-  <div id="episode-list"></div>
-
-  <!-- Plyr JavaScript -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-  <script>
-    const API_URL = 'https://fenix-backend-iae6.onrender.com';
-
-    // URL ကနေ contentId နဲ့ type ကို ယူပါ
-    const urlParams = new URLSearchParams(window.location.search);
-    const contentId = urlParams.get('contentId');
-    const contentType = urlParams.get('type');
-
-    // Plyr Player ကို Initialize လုပ်ပါ
-    const player = new Plyr('#video-player', {
-      controls: [
-        'play-large', // The large play button in the center
-        'rewind', // Rewind button (default 10 seconds)
-        'play', // Play/pause playback
-        'fast-forward', // Fast forward button (default 10 seconds)
-        'progress', // The progress bar and scrubber
-        'current-time', // The current time of playback
-        'duration', // The full duration of the video
-        'mute', // Toggle mute
-        'volume', // Volume control
-        'settings', // Settings menu
-        'fullscreen' // Toggle fullscreen
-      ],
-      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
-    });
-
-    async function fetchContentDetails() {
-      try {
-        const response = await fetch(`${API_URL}/api/${contentType}s/${contentId}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${contentType} details: ${response.status}`);
-        }
-        const content = await response.json();
-        console.log('Content Details:', content); // Debug လုပ်ဖို့
-
-        // Title ကို ပြပါ
-        const titleElement = document.getElementById('content-title');
-        titleElement.textContent = content.title || 'Untitled';
-
-        // Video URL ကို ယာယီအနေနဲ့ သတ်မှတ်ပါ (API ကနေ မပြန်ပေးသေးလို့)
+        titleElement.textContent = 'Error Loading Content';
         const videoSource = document.getElementById('video-source');
-        // API ကနေ videoUrl မပြန်ပေးသေးတာကြောင့် ယာယီ sample video URL သုံးထားပါတယ်
-        videoSource.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
-        player.source = {
-          type: 'video',
-          sources: [
-            {
-              src: videoSource.src,
-              type: 'video/mp4'
-            }
-          ]
-        };
-      } catch (error) {
-        console.error(`Error fetching ${contentType} details:`, error);
-        alert(`Error fetching ${contentType} details: ${error.message}`);
+        videoSource.src = ''; // Error ဖြစ်ရင် ဘာမှ မဖွင့်ပါ
       }
     }
 
@@ -337,20 +138,22 @@ Name = 'episode-item';
           episodeItem.className = 'episode-item';
           episodeItem.textContent = episode.title || `Episode ${episode.id}`;
           episodeItem.onclick = () => {
-            // Episode တစ်ခုကို နှိပ်တဲ့အခါ video URL ကို ပြောင်းပါ
             const videoSource = document.getElementById('video-source');
-            // API ကနေ videoUrl မပြန်ပေးသေးတာကြောင့် ယာယီ URL သုံးထားပါတယ်
-            videoSource.src = episode.videoUrl || 'https://www.w3schools.com/html/mov_bbb.mp4';
-            player.source = {
-              type: 'video',
-              sources: [
-                {
-                  src: videoSource.src,
-                  type: 'video/mp4'
-                }
-              ]
-            };
-            player.play();
+            if (episode.videoUrl) {
+              videoSource.src = episode.videoUrl;
+              player.source = {
+                type: 'video',
+                sources: [
+                  {
+                    src: videoSource.src,
+                    type: 'video/mp4'
+                  }
+                ]
+              };
+              player.play();
+            } else {
+              alert('No video URL found for this episode. Please add videoUrl field in the backend API.');
+            }
           };
           episodeList.appendChild(episodeItem);
         });
@@ -359,30 +162,7 @@ Name = 'episode-item';
         // Episodes endpoint မရှိသေးတာကြောင့် ယာယီ episodes စာရင်းတစ်ခု ပြပါ
         const episodeList = document.getElementById('episode-list');
         episodeList.innerHTML = ''; // Clear existing content
-        const mockEpisodes = [
-          { id: 1, title: 'Episode 1', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-          { id: 2, title: 'Episode 2', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
-        ];
-        mockEpisodes.forEach(episode => {
-          const episodeItem = document.createElement('div');
-          episodeItem.className = 'episode-item';
-          episodeItem.textContent = episode.title;
-          episodeItem.onclick = () => {
-            const videoSource = document.getElementById('video-source');
-            videoSource.src = episode.videoUrl;
-            player.source = {
-              type: 'video',
-              sources: [
-                {
-                  src: videoSource.src,
-                  type: 'video/mp4'
-                }
-              ]
-            };
-            player.play();
-          };
-          episodeList.appendChild(episodeItem);
-        });
+        alert('No episodes found. Please add /api/series/:id/episodes endpoint in the backend API.');
       }
     }
 
