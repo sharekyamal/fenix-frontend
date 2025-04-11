@@ -14,13 +14,16 @@
       background-color: #1a1a1a;
       color: #fff;
       margin: 0;
-      padding: 10px;
+      padding: 0;
+    }
+    .container {
       max-width: 480px; /* Mobile ပုံစံအတိုင်း ကန့်သတ်ထားပါတယ် */
       margin-left: auto;
       margin-right: auto;
+      padding: 10px;
     }
     @media (min-width: 768px) {
-      body {
+      .container {
         max-width: 1200px; /* Desktop မှာ ပိုကျယ်အောင် လုပ်ထားပါတယ် */
       }
       .content-grid {
@@ -274,56 +277,58 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Fenix</h1>
-    <!-- Header Ad -->
-    <div class="ad-banner">
-      <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
+  <div class="container">
+    <header>
+      <h1>Fenix</h1>
+      <!-- Header Ad -->
+      <div class="ad-banner">
+        <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
+      </div>
+    </header>
+
+    <!-- Home Section -->
+    <div id="home-section">
+      <h2>All Posts</h2>
+      <div id="video-grid" class="content-grid"></div>
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
     </div>
-  </header>
 
-  <!-- Home Section -->
-  <div id="home-section">
-    <h2>All Posts</h2>
-    <div id="video-grid" class="content-grid"></div>
-    <!-- Pagination -->
-    <div class="pagination" id="pagination"></div>
-  </div>
-
-  <!-- Video Player Section (Custom Page) -->
-  <div id="video-player-section">
-    <a href="#" class="back-button" onclick="showHomeSection(); return false;">Back</a>
-    <h3 id="video-title"></h3>
-    <div class="description" id="video-description"></div>
-    <div style="position: relative;">
-      <video id="video-player" playsinline controls>
-        <source id="video-source" src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      <!-- In-Video Ad -->
-      <div id="in-video-ad">
-        <div class="in-video-ad-content">
-          <video id="in-video-ad-player" playsinline>
-            <source id="in-video-ad-source" src="" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
+    <!-- Video Player Section (Custom Page) -->
+    <div id="video-player-section">
+      <a href="#" class="back-button" onclick="showHomeSection(); return false;">Back</a>
+      <h3 id="video-title"></h3>
+      <div class="description" id="video-description"></div>
+      <div style="position: relative;">
+        <video id="video-player" playsinline controls>
+          <source id="video-source" src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <!-- In-Video Ad -->
+        <div id="in-video-ad">
+          <div class="in-video-ad-content">
+            <video id="in-video-ad-player" playsinline>
+              <source id="in-video-ad-source" src="" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
+          </div>
         </div>
       </div>
+      <!-- Ad Below Video Player -->
+      <div class="video-ad">
+        <a href="https://example.com/ad1" target="_blank">
+          <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
+        </a>
+      </div>
     </div>
-    <!-- Ad Below Video Player -->
-    <div class="video-ad">
-      <a href="https://example.com/ad1" target="_blank">
-        <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
-      </a>
-    </div>
-  </div>
 
-  <!-- Popup Ad -->
-  <div id="popup-ad">
-    <div class="ad-content">
-      <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
-      <div class="ad-timer">ခဏစောင့်ပါ <span id="ad-timer">5</span> စက္ကန့်</div>
+    <!-- Popup Ad -->
+    <div id="popup-ad">
+      <div class="ad-content">
+        <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
+        <div class="ad-timer">ခဏစောင့်ပါ <span id="ad-timer">5</span> စက္ကန့်</div>
+      </div>
     </div>
   </div>
 
@@ -373,7 +378,7 @@
       try {
         const response = await fetch('data.json');
         if (!response.ok) {
-          throw new Error('Failed to fetch data.json');
+          throw new Error(`Failed to fetch data.json: ${response.status} ${response.statusText}`);
         }
         data = await response.json();
         allVideos = data.videos;
@@ -390,7 +395,7 @@
       } catch (error) {
         console.error('Error fetching videos:', error);
         const videoGrid = document.getElementById('video-grid');
-        videoGrid.innerHTML = '<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်ကြိုးစားပါ။</div>';
+        videoGrid.innerHTML = `<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ အမှားအသေးစိတ်: ${error.message}</div>`;
       }
     }
 
@@ -428,7 +433,7 @@
       const pagination = document.getElementById('pagination');
       pagination.innerHTML = '';
 
-      for (let i = 1; i <= totalPages; i++) { // အကုန်ပြပေးမယ်
+      for (let i = 1; i <= totalPages; i++) {
         const pageLink = document.createElement('a');
         pageLink.href = '#';
         pageLink.textContent = i;
@@ -440,7 +445,7 @@
           currentPage = i;
           displayVideos();
           updatePagination();
-          window.scrollTo({ top: 0, behavior: 'smooth' }); // စာမျက်နှာထိပ်ကို ပြန်တက်မယ်
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         };
         pagination.appendChild(pageLink);
       }
