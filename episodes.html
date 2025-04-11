@@ -25,6 +25,25 @@
     .plyr {
       border-radius: 8px;
     }
+    .description {
+      max-width: 800px;
+      margin: 10px auto;
+      font-size: 14px;
+      color: #ccc;
+      text-align: center;
+    }
+    .ad-banner {
+      background-color: #333;
+      padding: 10px;
+      text-align: center;
+      margin: 10px auto;
+      border-radius: 5px;
+      max-width: 800px;
+    }
+    .ad-banner img {
+      max-width: 100%;
+      height: auto;
+    }
     #episode-list {
       margin-top: 20px;
       max-width: 800px;
@@ -41,6 +60,45 @@
     .episode-item:hover {
       background-color: #444;
     }
+    #popup-ad {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .ad-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+      position: relative;
+    }
+    .ad-content img {
+      max-width: 300px;
+      height: auto;
+    }
+    .ad-timer {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+    .skip-ad {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff4444;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -51,8 +109,22 @@
       Your browser does not support the video tag.
     </video>
   </div>
+  <div class="description" id="content-description">Loading description...</div>
+  <!-- Ad Banner below Player -->
+  <div class="ad-banner">
+    <img src="https://via.placeholder.com/728x90?text=Player+Ad" alt="Player Ad">
+  </div>
   <h2>Episodes</h2>
   <div id="episode-list"></div>
+
+  <!-- Popup Ad -->
+  <div id="popup-ad">
+    <div class="ad-content">
+      <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
+      <div class="ad-timer">Ad will close in <span id="ad-timer">5</span> seconds</div>
+      <button class="skip-ad" onclick="skipAd()">Skip Ad</button>
+    </div>
+  </div>
 
   <!-- Plyr JavaScript -->
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
@@ -91,9 +163,11 @@
         const content = await response.json();
         console.log('Content Details:', content); // Debug လုပ်ဖို့
 
-        // Title ကို ပြပါ
+        // Title နဲ့ Description ကို ပြပါ
         const titleElement = document.getElementById('content-title');
         titleElement.textContent = content.title || 'Untitled';
+        const descriptionElement = document.getElementById('content-description');
+        descriptionElement.textContent = content.description || 'A romantic love story series.';
 
         // Video URL ကို သတ်မှတ်ပါ
         const videoSource = document.getElementById('video-source');
@@ -117,6 +191,8 @@
         alert(`Error fetching ${contentType} details: ${error.message}`);
         const titleElement = document.getElementById('content-title');
         titleElement.textContent = 'Error Loading Content';
+        const descriptionElement = document.getElementById('content-description');
+        descriptionElement.textContent = 'Unable to load description.';
         const videoSource = document.getElementById('video-source');
         videoSource.src = ''; // Error ဖြစ်ရင် ဘာမှ မဖွင့်ပါ
       }
@@ -138,19 +214,21 @@
           episodeItem.className = 'episode-item';
           episodeItem.textContent = episode.title || `Episode ${episode.id}`;
           episodeItem.onclick = () => {
-            const videoSource = document.getElementById('video-source');
             if (episode.videoUrl) {
-              videoSource.src = episode.videoUrl;
-              player.source = {
-                type: 'video',
-                sources: [
-                  {
-                    src: videoSource.src,
-                    type: 'video/mp4'
-                  }
-                ]
-              };
-              player.play();
+              showPopupAd(() => {
+                const videoSource = document.getElementById('video-source');
+                videoSource.src = episode.videoUrl;
+                player.source = {
+                  type: 'video',
+                  sources: [
+                    {
+                      src: videoSource.src,
+                      type: 'video/mp4'
+                    }
+                  ]
+                };
+                player.play();
+              });
             } else {
               alert('No video URL found for this episode. Please add videoUrl field in the backend API.');
             }
@@ -159,11 +237,35 @@
         });
       } catch (error) {
         console.error('Error fetching episodes:', error);
-        // Episodes endpoint မရှိသေးတာကြောင့် ယာယီ episodes စာရင်းတစ်ခု ပြပါ
+        alert('No episodes found. Please add /api/series/:id/episodes endpoint in the backend API.');
         const episodeList = document.getElementById('episode-list');
         episodeList.innerHTML = ''; // Clear existing content
-        alert('No episodes found. Please add /api/series/:id/episodes endpoint in the backend API.');
       }
+    }
+
+    function showPopupAd(callback) {
+      const popupAd = document.getElementById('popup-ad');
+      const adTimerElement = document.getElementById('ad-timer');
+      let timeLeft = 5;
+
+      popupAd.style.display = 'flex';
+      adTimerElement.textContent = timeLeft;
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        adTimerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          popupAd.style.display = 'none';
+          callback();
+        }
+      }, 1000);
+
+      window.skipAd = () => {
+        clearInterval(timer);
+        popupAd.style.display = 'none';
+        callback();
+      };
     }
 
     // Page ဖွင့်တာနဲ့ အသေးစိတ်အချက်အလက်နဲ့ episodes တွေကို ခေါ်ပါ
