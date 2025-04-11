@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Fenix</title>
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,6 +39,10 @@
     h2 {
       margin-top: 20px;
       font-size: 20px;
+    }
+    h3 {
+      margin: 10px 0;
+      font-size: 18px;
     }
     .category-section {
       margin-bottom: 20px;
@@ -135,6 +141,27 @@
       font-size: 14px;
       margin-top: 20px;
     }
+    #video-player-section {
+      display: none;
+    }
+    .description {
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+    .plyr {
+      border-radius: 8px;
+    }
+    .back-button {
+      display: inline-block;
+      background-color: #ff4444;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -146,10 +173,23 @@
     </div>
   </header>
 
-  <div id="categories"></div>
+  <!-- Home Section -->
+  <div id="home-section">
+    <div id="categories"></div>
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </div>
 
-  <!-- Pagination -->
-  <div class="pagination" id="pagination"></div>
+  <!-- Video Player Section (Custom Page) -->
+  <div id="video-player-section">
+    <a href="#" class="back-button" onclick="showHomeSection(); return false;">Back</a>
+    <h3 id="video-title"></h3>
+    <div class="description" id="video-description"></div>
+    <video id="video-player" playsinline controls>
+      <source id="video-source" src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
 
   <!-- Popup Ad -->
   <div id="popup-ad">
@@ -159,10 +199,30 @@
     </div>
   </div>
 
+  <!-- Plyr JavaScript -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script>
     const ITEMS_PER_PAGE = 12; // 3x4 grid = 12 items per page
     let currentPage = 1;
     let allVideos = [];
+
+    // Plyr Player ကို Initialize လုပ်ပါ
+    const player = new Plyr('#video-player', {
+      controls: [
+        'play-large', // The large play button in the center
+        'rewind', // Rewind button (default 10 seconds)
+        'play', // Play/pause playback
+        'fast-forward', // Fast forward button (default 10 seconds)
+        'progress', // The progress bar and scrubber
+        'current-time', // The current time of playback
+        'duration', // The full duration of the video
+        'mute', // Toggle mute
+        'volume', // Volume control
+        'settings', // Settings menu
+        'fullscreen' // Toggle fullscreen
+      ],
+      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
+    });
 
     async function fetchVideos() {
       try {
@@ -228,7 +288,7 @@
           playButton.onclick = (e) => {
             e.stopPropagation();
             showPopupAd(() => {
-              window.location.href = `episodes.html?contentId=${item.id}&type=video&videoUrl=${encodeURIComponent(item.videoUrl)}&title=${encodeURIComponent(item.title)}&description=${encodeURIComponent(item.description)}`;
+              playVideo(item);
             });
           };
           videosList.appendChild(videoItem);
@@ -286,6 +346,43 @@
           callback();
         }
       }, 1000);
+    }
+
+    function playVideo(item) {
+      const homeSection = document.getElementById('home-section');
+      const videoPlayerSection = document.getElementById('video-player-section');
+      const videoSource = document.getElementById('video-source');
+      const videoTitle = document.getElementById('video-title');
+      const videoDescription = document.getElementById('video-description');
+
+      // Show video player section, hide home section
+      homeSection.style.display = 'none';
+      videoPlayerSection.style.display = 'block';
+
+      // Set video details
+      videoTitle.textContent = item.title;
+      videoDescription.textContent = item.description;
+      videoSource.src = item.videoUrl;
+      player.source = {
+        type: 'video',
+        sources: [
+          {
+            src: videoSource.src,
+            type: 'video/mp4'
+          }
+        ]
+      };
+      player.play();
+    }
+
+    function showHomeSection() {
+      const homeSection = document.getElementById('home-section');
+      const videoPlayerSection = document.getElementById('video-player-section');
+
+      // Show home section, hide video player section
+      homeSection.style.display = 'block';
+      videoPlayerSection.style.display = 'none';
+      player.pause();
     }
 
     window.onload = () => {
