@@ -29,6 +29,9 @@
       .content-grid {
         grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
       }
+      .related-videos-grid {
+        grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
+      }
     }
     header {
       text-align: center;
@@ -62,6 +65,12 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 10px;
+    }
+    .related-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
     }
     .content-item {
       position: relative;
@@ -172,6 +181,8 @@
     .plyr {
       border-radius: 8px;
       width: 100%;
+      max-width: 100%;
+      height: auto;
     }
     .back-button {
       display: inline-block;
@@ -351,6 +362,9 @@
           <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
         </a>
       </div>
+      <!-- Related Videos -->
+      <h2>Related Videos</h2>
+      <div id="related-videos" class="related-videos-grid"></div>
     </div>
 
     <!-- Popup Ad -->
@@ -543,12 +557,44 @@
         ]
       };
 
+      // Display related videos
+      displayRelatedVideos(item.id);
+
       // In-Video Ad Logic
       if (data.showInVideoAd) {
         showInVideoAd();
       } else {
         player.play();
       }
+    }
+
+    function displayRelatedVideos(currentVideoId) {
+      const relatedVideosGrid = document.getElementById('related-videos');
+      relatedVideosGrid.innerHTML = '';
+
+      // Filter out the current video and get a random selection of 3 videos
+      const otherVideos = allVideos.filter(video => video.id !== currentVideoId);
+      const shuffledVideos = otherVideos.sort(() => 0.5 - Math.random());
+      const relatedVideos = shuffledVideos.slice(0, 3);
+
+      relatedVideos.forEach(item => {
+        const videoItem = document.createElement('div');
+        videoItem.className = 'content-item';
+        videoItem.innerHTML = `
+          <img src="${item.image}" alt="${item.title}">
+          <button class="play-button">Play</button>
+          <div class="title">${item.title}</div>
+          <div class="category">${item.category}</div>
+        `;
+        const playButton = videoItem.querySelector('.play-button');
+        playButton.onclick = (e) => {
+          e.stopPropagation();
+          showPopupAd(() => {
+            playVideo(item);
+          });
+        };
+        relatedVideosGrid.appendChild(videoItem);
+      });
     }
 
     function showInVideoAd() {
@@ -558,7 +604,11 @@
       const adTimerElement = document.getElementById('in-video-ad-timer');
       let timeLeft = 10;
 
+      // Reset previous states
       inVideoAd.style.display = 'block';
+      skipAdButton.style.display = 'none';
+      if (adTimerInterval) clearInterval(adTimerInterval);
+      inVideoAdPlayer.pause();
       player.pause();
 
       // Set the in-video ad source
