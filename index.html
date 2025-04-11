@@ -6,6 +6,8 @@
   <title>Fenix</title>
   <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,16 +38,25 @@
       margin: 0;
       font-size: 24px;
     }
-    h2 {
-      margin-top: 20px;
-      font-size: 20px;
-    }
     h3 {
       margin: 10px 0;
       font-size: 18px;
     }
-    .category-section {
-      margin-bottom: 20px;
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .category-item {
+      background-color: #333;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .category-item.active {
+      background-color: #555;
     }
     .content-grid {
       display: grid;
@@ -162,6 +173,56 @@
       font-size: 14px;
       margin-bottom: 10px;
     }
+    .video-ad {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .video-ad a {
+      display: block;
+      text-decoration: none;
+    }
+    .video-ad img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #333;
+      padding: 10px 0;
+      text-align: center;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .footer-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .footer-nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .footer-nav a:hover {
+      background-color: #555;
+    }
+    .footer-nav i {
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
@@ -175,7 +236,8 @@
 
   <!-- Home Section -->
   <div id="home-section">
-    <div id="categories"></div>
+    <div class="category-list" id="category-list"></div>
+    <div id="video-grid" class="content-grid"></div>
     <!-- Pagination -->
     <div class="pagination" id="pagination"></div>
   </div>
@@ -189,6 +251,12 @@
       <source id="video-source" src="" type="video/mp4">
       Your browser does not support the video tag.
     </video>
+    <!-- Ad Below Video Player -->
+    <div class="video-ad">
+      <a href="https://example.com/ad1" target="_blank">
+        <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
+      </a>
+    </div>
   </div>
 
   <!-- Popup Ad -->
@@ -199,12 +267,32 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer>
+    <div class="footer-nav">
+      <a href="#" onclick="navigateVideo('back'); return false;">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+      </a>
+      <a href="#" onclick="showHomeSection(); return false;">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="#" onclick="navigateVideo('forward'); return false;">
+        <i class="fas fa-arrow-right"></i>
+        <span>Forward</span>
+      </a>
+    </div>
+  </footer>
+
   <!-- Plyr JavaScript -->
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script>
     const ITEMS_PER_PAGE = 12; // 3x4 grid = 12 items per page
     let currentPage = 1;
     let allVideos = [];
+    let currentCategory = null;
+    let currentVideoIndex = -1;
 
     // Plyr Player ကို Initialize လုပ်ပါ
     const player = new Plyr('#video-player', {
@@ -235,69 +323,85 @@
         displayCategories();
       } catch (error) {
         console.error('Error fetching videos:', error);
-        const categoriesContainer = document.getElementById('categories');
-        categoriesContainer.innerHTML = '<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်ကြိုးစားပါ။</div>';
+        const videoGrid = document.getElementById('video-grid');
+        videoGrid.innerHTML = '<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်ကြိုးစားပါ။</div>';
       }
     }
 
     function displayCategories() {
-      const categoriesContainer = document.getElementById('categories');
-      categoriesContainer.innerHTML = '';
+      const categoryList = document.getElementById('category-list');
+      categoryList.innerHTML = '';
 
       // ထပ်တူ category တွေကို ဖယ်ထုတ်ပြီး unique categories တွေကို ရယူမယ်
       const categories = [...new Set(allVideos.map(video => video.category))];
 
       categories.forEach(category => {
-        const categorySection = document.createElement('div');
-        categorySection.className = 'category-section';
-        categorySection.innerHTML = `<h2>${category}</h2>`;
-        const videosList = document.createElement('div');
-        videosList.className = 'content-grid';
-        videosList.id = `category-${category}`;
-        categorySection.appendChild(videosList);
-        categoriesContainer.appendChild(categorySection);
+        const categoryItem = document.createElement('div');
+        categoryItem.className = 'category-item';
+        categoryItem.textContent = category;
+        categoryItem.onclick = () => {
+          currentCategory = category;
+          currentPage = 1;
+          updateCategorySelection();
+          displayVideos();
+          setupPagination();
+        };
+        categoryList.appendChild(categoryItem);
       });
 
-      displayVideos(currentPage);
-      setupPagination();
+      // Default အနေနဲ့ ပထမဆုံး category ကို ရွေးထားမယ်
+      if (categories.length > 0) {
+        currentCategory = categories[0];
+        updateCategorySelection();
+        displayVideos();
+        setupPagination();
+      }
     }
 
-    function displayVideos(page) {
-      const start = (page - 1) * ITEMS_PER_PAGE;
+    function updateCategorySelection() {
+      const categoryItems = document.querySelectorAll('.category-item');
+      categoryItems.forEach(item => {
+        if (item.textContent === currentCategory) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    function displayVideos() {
+      const videoGrid = document.getElementById('video-grid');
+      videoGrid.innerHTML = '';
+
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
       const end = start + ITEMS_PER_PAGE;
 
-      // ထပ်တူ category တွေကို ဖယ်ထုတ်ပြီး unique categories တွေကို ရယူမယ်
-      const categories = [...new Set(allVideos.map(video => video.category))];
+      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
+      const videosToShow = videosInCategory.slice(start, end);
 
-      categories.forEach(category => {
-        const videosList = document.getElementById(`category-${category}`);
-        videosList.innerHTML = ''; // Clear existing content
-
-        const videosInCategory = allVideos.filter(video => video.category === category);
-        const videosToShow = videosInCategory.slice(start, end);
-
-        videosToShow.forEach(item => {
-          const videoItem = document.createElement('div');
-          videoItem.className = 'content-item';
-          videoItem.innerHTML = `
-            <img src="${item.image}" alt="${item.title}">
-            <button class="play-button">Play</button>
-            <div class="title">${item.title}</div>
-          `;
-          const playButton = videoItem.querySelector('.play-button');
-          playButton.onclick = (e) => {
-            e.stopPropagation();
-            showPopupAd(() => {
-              playVideo(item);
-            });
-          };
-          videosList.appendChild(videoItem);
-        });
+      videosToShow.forEach((item, index) => {
+        const videoItem = document.createElement('div');
+        videoItem.className = 'content-item';
+        videoItem.innerHTML = `
+          <img src="${item.image}" alt="${item.title}">
+          <button class="play-button">Play</button>
+          <div class="title">${item.title}</div>
+        `;
+        const playButton = videoItem.querySelector('.play-button');
+        playButton.onclick = (e) => {
+          e.stopPropagation();
+          currentVideoIndex = start + index;
+          showPopupAd(() => {
+            playVideo(item);
+          });
+        };
+        videoGrid.appendChild(videoItem);
       });
     }
 
     function setupPagination() {
-      const totalPages = Math.ceil(allVideos.length / ITEMS_PER_PAGE);
+      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
+      const totalPages = Math.ceil(videosInCategory.length / ITEMS_PER_PAGE);
       const pagination = document.getElementById('pagination');
       pagination.innerHTML = '';
 
@@ -311,7 +415,7 @@
         pageLink.onclick = (e) => {
           e.preventDefault();
           currentPage = i;
-          displayVideos(currentPage);
+          displayVideos();
           updatePagination();
         };
         pagination.appendChild(pageLink);
@@ -383,6 +487,18 @@
       homeSection.style.display = 'block';
       videoPlayerSection.style.display = 'none';
       player.pause();
+      currentVideoIndex = -1;
+    }
+
+    function navigateVideo(direction) {
+      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
+      if (direction === 'back' && currentVideoIndex > 0) {
+        currentVideoIndex--;
+        playVideo(videosInCategory[currentVideoIndex]);
+      } else if (direction === 'forward' && currentVideoIndex < videosInCategory.length - 1) {
+        currentVideoIndex++;
+        playVideo(videosInCategory[currentVideoIndex]);
+      }
     }
 
     window.onload = () => {
