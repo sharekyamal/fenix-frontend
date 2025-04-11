@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Fenix</title>
-  <!-- Plyr CSS -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -131,50 +129,6 @@
       font-size: 14px;
       color: #333;
     }
-    #video-player-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .video-player-content {
-      background-color: #1a1a1a;
-      padding: 15px;
-      border-radius: 5px;
-      text-align: center;
-      position: relative;
-      max-width: 90%;
-    }
-    .video-player-content h3 {
-      margin: 0 0 10px 0;
-      font-size: 18px;
-    }
-    .video-player-content .description {
-      font-size: 12px;
-      color: #ccc;
-      margin-bottom: 10px;
-    }
-    .close-player {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff4444;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .plyr {
-      border-radius: 8px;
-    }
     .error-message {
       text-align: center;
       color: #ff4444;
@@ -205,43 +159,10 @@
     </div>
   </div>
 
-  <!-- Video Player Modal -->
-  <div id="video-player-modal">
-    <div class="video-player-content">
-      <h3 id="player-title"></h3>
-      <div class="description" id="player-description"></div>
-      <video id="video-player" playsinline controls>
-        <source id="video-source" src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      <button class="close-player" onclick="closeVideoPlayer()">Close</button>
-    </div>
-  </div>
-
-  <!-- Plyr JavaScript -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script>
     const ITEMS_PER_PAGE = 12; // 3x4 grid = 12 items per page
     let currentPage = 1;
     let allVideos = [];
-
-    // Plyr Player ကို Initialize လုပ်ပါ
-    const player = new Plyr('#video-player', {
-      controls: [
-        'play-large', // The large play button in the center
-        'rewind', // Rewind button (default 10 seconds)
-        'play', // Play/pause playback
-        'fast-forward', // Fast forward button (default 10 seconds)
-        'progress', // The progress bar and scrubber
-        'current-time', // The current time of playback
-        'duration', // The full duration of the video
-        'mute', // Toggle mute
-        'volume', // Volume control
-        'settings', // Settings menu
-        'fullscreen' // Toggle fullscreen
-      ],
-      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
-    });
 
     async function fetchVideos() {
       try {
@@ -307,7 +228,7 @@
           playButton.onclick = (e) => {
             e.stopPropagation();
             showPopupAd(() => {
-              playVideo(item);
+              window.location.href = `episodes.html?contentId=${item.id}&type=video&videoUrl=${encodeURIComponent(item.videoUrl)}&title=${encodeURIComponent(item.title)}&description=${encodeURIComponent(item.description)}`;
             });
           };
           videosList.appendChild(videoItem);
@@ -365,34 +286,6 @@
           callback();
         }
       }, 1000);
-    }
-
-    function playVideo(item) {
-      const videoPlayerModal = document.getElementById('video-player-modal');
-      const videoSource = document.getElementById('video-source');
-      const playerTitle = document.getElementById('player-title');
-      const playerDescription = document.getElementById('player-description');
-
-      playerTitle.textContent = item.title;
-      playerDescription.textContent = item.description;
-      videoSource.src = item.videoUrl;
-      player.source = {
-        type: 'video',
-        sources: [
-          {
-            src: videoSource.src,
-            type: 'video/mp4'
-          }
-        ]
-      };
-      videoPlayerModal.style.display = 'flex';
-      player.play();
-    }
-
-    function closeVideoPlayer() {
-      const videoPlayerModal = document.getElementById('video-player-modal');
-      player.pause();
-      videoPlayerModal.style.display = 'none';
     }
 
     window.onload = () => {
