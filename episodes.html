@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fenix - Video</title>
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      margin: 0;
+      padding: 10px;
+      max-width: 480px; /* Mobile ပုံစံအတိုင်း ကန့်သတ်ထားပါတယ် */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    header {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .ad-banner {
+      background-color: #333;
+      padding: 10px;
+      text-align: center;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .ad-banner img {
+      max-width: 100%;
+      height: auto;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    h3 {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .description {
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+    .plyr {
+      border-radius: 8px;
+    }
+    .back-button {
+      display: inline-block;
+      background-color: #ff4444;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Fenix</h1>
+    <!-- Header Ad -->
+    <div class="ad-banner">
+      <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
+    </div>
+  </header>
+
+  <a href="index.html" class="back-button">Back</a>
+  <h3 id="video-title"></h3>
+  <div class="description" id="video-description"></div>
+  <video id="video-player" playsinline controls>
+    <source id="video-source" src="" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Plyr JavaScript -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <script>
+    // Plyr Player ကို Initialize လုပ်ပါ
+    const player = new Plyr('#video-player', {
+      controls: [
+        'play-large', // The large play button in the center
+        'rewind', // Rewind button (default 10 seconds)
+        'play', // Play/pause playback
+        'fast-forward', // Fast forward button (default 10 seconds)
+        'progress', // The progress bar and scrubber
+        'current-time', // The current time of playback
+        'duration', // The full duration of the video
+        'mute', // Toggle mute
+        'volume', // Volume control
+        'settings', // Settings menu
+        'fullscreen' // Toggle fullscreen
+      ],
+      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
+    });
+
+    // URL ကနေ parameters တွေကို ဖတ်မယ်
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = decodeURIComponent(urlParams.get('videoUrl'));
+    const title = decodeURIComponent(urlParams.get('title'));
+    const description = decodeURIComponent(urlParams.get('description'));
+
+    // Video player ကို အလုပ်လုပ်အောင် ပြင်ဆင်မယ်
+    const videoSource = document.getElementById('video-source');
+    const videoTitle = document.getElementById('video-title');
+    const videoDescription = document.getElementById('video-description');
+
+    videoTitle.textContent = title;
+    videoDescription.textContent = description;
+    videoSource.src = videoUrl;
+    player.source = {
+      type: 'video',
+      sources: [
+        {
+          src: videoSource.src,
+          type: 'video/mp4'
+        }
+      ]
+    };
+    player.play();
+  </script>
+</body>
+</html>
