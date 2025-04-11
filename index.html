@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Fenix</title>
-  <!-- Plyr CSS -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
@@ -27,9 +25,6 @@
         max-width: 1200px; /* Desktop မှာ ပိုကျယ်အောင် လုပ်ထားပါတယ် */
       }
       .content-grid {
-        grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
-      }
-      .related-videos-grid {
         grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
       }
     }
@@ -56,21 +51,11 @@
       margin-top: 20px;
       font-size: 20px;
     }
-    h3 {
-      margin: 10px 0;
-      font-size: 18px;
-    }
     .content-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 10px;
-    }
-    .related-videos-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
     }
     .content-item {
       position: relative;
@@ -169,44 +154,6 @@
       font-size: 14px;
       margin-top: 20px;
     }
-    #video-player-section {
-      display: none;
-      position: relative;
-    }
-    .description {
-      font-size: 12px;
-      color: #ccc;
-      margin-bottom: 10px;
-    }
-    .plyr {
-      border-radius: 8px;
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-    }
-    .back-button {
-      display: inline-block;
-      background-color: #ff4444;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 3px;
-      text-decoration: none;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .video-ad {
-      margin-top: 10px;
-      text-align: center;
-    }
-    .video-ad a {
-      display: block;
-      text-decoration: none;
-    }
-    .video-ad img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
     footer {
       position: fixed;
       bottom: 0;
@@ -255,62 +202,6 @@
     .footer-nav i {
       font-size: 24px;
     }
-    #in-video-ad {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      z-index: 10;
-    }
-    .in-video-ad-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-    .in-video-ad-content video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Responsive ဖြစ်အောင် */
-    }
-    .ad-info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
-    .ad-timer-skip {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-    }
-    .ad-timer-skip .ad-timer {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
-    .skip-ad {
-      display: none;
-      background-color: #ff4444;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 3px;
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -331,42 +222,6 @@
       <div class="pagination" id="pagination"></div>
     </div>
 
-    <!-- Video Player Section (Custom Page) -->
-    <div id="video-player-section">
-      <a href="#" class="back-button" onclick="showHomeSection(); return false;">Back</a>
-      <h3 id="video-title"></h3>
-      <div class="description" id="video-description"></div>
-      <div style="position: relative;">
-        <video id="video-player" playsinline controls>
-          <source id="video-source" src="" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-        <!-- In-Video Ad -->
-        <div id="in-video-ad">
-          <div class="in-video-ad-content">
-            <video id="in-video-ad-player" playsinline>
-              <source id="in-video-ad-source" src="" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-            <div class="ad-info">Sponsored</div>
-            <div class="ad-timer-skip">
-              <div class="ad-timer">Ad ends in <span id="in-video-ad-timer">10</span> seconds</div>
-              <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Ad Below Video Player -->
-      <div class="video-ad">
-        <a href="https://example.com/ad1" target="_blank">
-          <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
-        </a>
-      </div>
-      <!-- Related Videos -->
-      <h2>Related Videos</h2>
-      <div id="related-videos" class="related-videos-grid"></div>
-    </div>
-
     <!-- Popup Ad -->
     <div id="popup-ad">
       <div class="ad-content">
@@ -379,39 +234,16 @@
   <!-- Footer -->
   <footer id="footer">
     <div class="footer-nav">
-      <a href="#" onclick="showHomeSection(); return false;" title="Home">
+      <a href="#" onclick="window.location.href='index.html'; return false;" title="Home">
         <i class="fas fa-home"></i>
       </a>
     </div>
   </footer>
 
-  <!-- Plyr JavaScript -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script>
     const ITEMS_PER_PAGE = 12; // 3x4 grid = 12 items per page
     let currentPage = 1;
     let allVideos = [];
-    let data = {};
-    let inVideoAdPlayer;
-    let adTimerInterval;
-
-    // Plyr Player ကို Initialize လုပ်ပါ
-    const player = new Plyr('#video-player', {
-      controls: [
-        'play-large', // The large play button in the center
-        'rewind', // Rewind button (default 10 seconds)
-        'play', // Play/pause playback
-        'fast-forward', // Fast forward button (default 10 seconds)
-        'progress', // The progress bar and scrubber
-        'current-time', // The current time of playback
-        'duration', // The full duration of the video
-        'mute', // Toggle mute
-        'volume', // Volume control
-        'settings', // Settings menu
-        'fullscreen' // Toggle fullscreen
-      ],
-      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
-    });
 
     async function fetchVideos() {
       try {
@@ -419,18 +251,12 @@
         if (!response.ok) {
           throw new Error(`Failed to fetch data.json: ${response.status} ${response.statusText}`);
         }
-        data = await response.json();
+        const data = await response.json();
         if (!data.videos || !Array.isArray(data.videos)) {
           throw new Error('Invalid data format: "videos" key is missing or not an array');
         }
         allVideos = data.videos;
         console.log('Data from data.json:', data);
-
-        // In-Video Ad Player ကို Initialize လုပ်ပါ
-        inVideoAdPlayer = new Plyr('#in-video-ad-player', {
-          controls: [],
-          autoplay: true
-        });
 
         displayVideos();
         setupPagination();
@@ -468,7 +294,7 @@
         playButton.onclick = (e) => {
           e.stopPropagation();
           showPopupAd(() => {
-            playVideo(item);
+            window.location.href = `player.html?videoId=${item.id}`;
           });
         };
         videoGrid.appendChild(videoItem);
@@ -528,140 +354,6 @@
           callback();
         }
       }, 1000);
-    }
-
-    function playVideo(item) {
-      const homeSection = document.getElementById('home-section');
-      const videoPlayerSection = document.getElementById('video-player-section');
-      const videoSource = document.getElementById('video-source');
-      const videoTitle = document.getElementById('video-title');
-      const videoDescription = document.getElementById('video-description');
-      const footer = document.getElementById('footer');
-
-      // Show video player section, hide home section and footer
-      homeSection.style.display = 'none';
-      videoPlayerSection.style.display = 'block';
-      footer.style.display = 'none';
-
-      // Set video details
-      videoTitle.textContent = item.title;
-      videoDescription.textContent = item.description;
-      videoSource.src = item.videoUrl;
-      player.source = {
-        type: 'video',
-        sources: [
-          {
-            src: videoSource.src,
-            type: 'video/mp4'
-          }
-        ]
-      };
-
-      // Display related videos
-      displayRelatedVideos(item.id);
-
-      // In-Video Ad Logic
-      if (data.showInVideoAd) {
-        showInVideoAd();
-      } else {
-        player.play();
-      }
-    }
-
-    function displayRelatedVideos(currentVideoId) {
-      const relatedVideosGrid = document.getElementById('related-videos');
-      relatedVideosGrid.innerHTML = '';
-
-      // Filter out the current video and get a random selection of 3 videos
-      const otherVideos = allVideos.filter(video => video.id !== currentVideoId);
-      const shuffledVideos = otherVideos.sort(() => 0.5 - Math.random());
-      const relatedVideos = shuffledVideos.slice(0, 3);
-
-      relatedVideos.forEach(item => {
-        const videoItem = document.createElement('div');
-        videoItem.className = 'content-item';
-        videoItem.innerHTML = `
-          <img src="${item.image}" alt="${item.title}">
-          <button class="play-button">Play</button>
-          <div class="title">${item.title}</div>
-          <div class="category">${item.category}</div>
-        `;
-        const playButton = videoItem.querySelector('.play-button');
-        playButton.onclick = (e) => {
-          e.stopPropagation();
-          showPopupAd(() => {
-            playVideo(item);
-          });
-        };
-        relatedVideosGrid.appendChild(videoItem);
-      });
-    }
-
-    function showInVideoAd() {
-      const inVideoAd = document.getElementById('in-video-ad');
-      const inVideoAdSource = document.getElementById('in-video-ad-source');
-      const skipAdButton = document.querySelector('.skip-ad');
-      const adTimerElement = document.getElementById('in-video-ad-timer');
-      let timeLeft = 10;
-
-      // Reset previous states
-      inVideoAd.style.display = 'block';
-      skipAdButton.style.display = 'none';
-      if (adTimerInterval) clearInterval(adTimerInterval);
-      inVideoAdPlayer.pause();
-      player.pause();
-
-      // Set the in-video ad source
-      inVideoAdSource.src = data.inVideoAdUrl;
-      inVideoAdPlayer.source = {
-        type: 'video',
-        sources: [
-          {
-            src: inVideoAdSource.src,
-            type: 'video/mp4'
-          }
-        ]
-      };
-      inVideoAdPlayer.play();
-
-      // Timer for in-video ad
-      adTimerElement.textContent = timeLeft;
-      adTimerInterval = setInterval(() => {
-        timeLeft--;
-        adTimerElement.textContent = timeLeft;
-        if (timeLeft <= 0) {
-          clearInterval(adTimerInterval);
-          skipAdButton.style.display = 'block';
-        }
-      }, 1000);
-    }
-
-    function skipInVideoAd() {
-      const inVideoAd = document.getElementById('in-video-ad');
-      const skipAdButton = document.querySelector('.skip-ad');
-      inVideoAd.style.display = 'none';
-      skipAdButton.style.display = 'none';
-      clearInterval(adTimerInterval);
-      inVideoAdPlayer.pause();
-      player.play();
-    }
-
-    function showHomeSection() {
-      const homeSection = document.getElementById('home-section');
-      const videoPlayerSection = document.getElementById('video-player-section');
-      const inVideoAd = document.getElementById('in-video-ad');
-      const skipAdButton = document.querySelector('.skip-ad');
-      const footer = document.getElementById('footer');
-
-      // Show home section, hide video player section, show footer
-      homeSection.style.display = 'block';
-      videoPlayerSection.style.display = 'none';
-      inVideoAd.style.display = 'none';
-      skipAdButton.style.display = 'none';
-      footer.style.display = 'block';
-      player.pause();
-      if (inVideoAdPlayer) inVideoAdPlayer.pause();
-      clearInterval(adTimerInterval);
     }
 
     window.onload = () => {
