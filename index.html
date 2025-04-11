@@ -129,7 +129,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      height: "100%;
       background-color: rgba(0, 0, 0, 0.8);
       z-index: 1000;
       justify-content: center;
@@ -381,6 +381,9 @@
           throw new Error(`Failed to fetch data.json: ${response.status} ${response.statusText}`);
         }
         data = await response.json();
+        if (!data.videos || !Array.isArray(data.videos)) {
+          throw new Error('Invalid data format: "videos" key is missing or not an array');
+        }
         allVideos = data.videos;
         console.log('Data from data.json:', data);
 
@@ -402,6 +405,11 @@
     function displayVideos() {
       const videoGrid = document.getElementById('video-grid');
       videoGrid.innerHTML = '';
+
+      if (!allVideos || !Array.isArray(allVideos)) {
+        videoGrid.innerHTML = '<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ ဒေတာမရှိပါ။</div>';
+        return;
+      }
 
       const start = (currentPage - 1) * ITEMS_PER_PAGE;
       const end = start + ITEMS_PER_PAGE;
@@ -429,6 +437,8 @@
     }
 
     function setupPagination() {
+      if (!allVideos || !Array.isArray(allVideos)) return;
+
       const totalPages = Math.ceil(allVideos.length / ITEMS_PER_PAGE);
       const pagination = document.getElementById('pagination');
       pagination.innerHTML = '';
