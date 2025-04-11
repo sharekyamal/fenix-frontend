@@ -74,6 +74,8 @@
       width: 100%;
       height: auto;
       display: block;
+      aspect-ratio: 16 / 9; /* Image တွေကို တစ်ပုံစံတည်း ဖြစ်အောင် */
+      object-fit: cover;
     }
     .content-item .title {
       padding: 5px;
@@ -129,7 +131,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: "100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
       z-index: 1000;
       justify-content: center;
@@ -169,6 +171,7 @@
     }
     .plyr {
       border-radius: 8px;
+      width: 100%;
     }
     .back-button {
       display: inline-block;
@@ -570,7 +573,7 @@
       inVideoAd.style.display = 'none';
       skipAdButton.style.display = 'none';
       player.pause();
-      inVideoAdPlayer.pause();
+      if (inVideoAdPlayer) inVideoAdPlayer.pause();
     }
 
     function goBack() {
