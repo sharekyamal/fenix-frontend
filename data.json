@@ -1,17 +1,111 @@
-[
-  { "id": 1, "title": "Video 1", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A romantic story.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar,All" },
-  { "id": 2, "title": "Video 2", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "An action movie.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar,All" },
-  { "id": 3, "title": "Video 3", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A comedy show.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar,All" },
-  { "id": 4, "title": "Video 4", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A thriller.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar,All" },
-  { "id": 5, "title": "Video 5", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A drama series.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "China,All" },
-  { "id": 6, "title": "Video 6", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A sci-fi adventure.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar" },
-  { "id": 7, "title": "Video 7", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A mystery.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 8, "title": "Video 8", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A historical drama.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 9, "title": "Video 9", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A fantasy tale.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 10, "title": "Video 10", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A horror movie.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 11, "title": "Video 11", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A romantic comedy.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 12, "title": "Video 12", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "An adventure.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Japan" },
-  { "id": 13, "title": "Video 13", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A documentary.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar" },
-  { "id": 14, "title": "Video 14", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A family drama.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar" },
-  { "id": 15, "title": "Video 15", "image": "https://android.momoclips.com/images/21288_video_thumb.png", "description": "A sports movie.", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4", "category": "Myanmar" }
-]
+{
+  "showInVideoAd": true,
+  "inVideoAdUrl": "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Coca-Cola%20_%204K%20Commercial%20_%20Product%20Video.mp4",
+  "videos": [
+    {
+      "title": "Video 1",
+      "description": "A romantic story.",
+      "image": "https://via.placeholder.com/150?text=Video+1",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 2",
+      "description": "A thrilling adventure.",
+      "image": "https://via.placeholder.com/150?text=Video+2",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 3",
+      "description": "A comedy show.",
+      "image": "https://via.placeholder.com/150?text=Video+3",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 4",
+      "description": "A drama series.",
+      "image": "https://via.placeholder.com/150?text=Video+4",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 5",
+      "description": "A mystery tale.",
+      "image": "https://via.placeholder.com/150?text=Video+5",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 6",
+      "description": "A sci-fi adventure.",
+      "image": "https://via.placeholder.com/150?text=Video+6",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 7",
+      "description": "A historical drama.",
+      "image": "https://via.placeholder.com/150?text=Video+7",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 8",
+      "description": "A love story.",
+      "image": "https://via.placeholder.com/150?text=Video+8",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 9",
+      "description": "An action movie.",
+      "image": "https://via.placeholder.com/150?text=Video+9",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 10",
+      "description": "A fantasy tale.",
+      "image": "https://via.placeholder.com/150?text=Video+10",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 11",
+      "description": "A horror story.",
+      "image": "https://via.placeholder.com/150?text=Video+11",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 12",
+      "description": "A documentary.",
+      "image": "https://via.placeholder.com/150?text=Video+12",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Japan"
+    },
+    {
+      "title": "Video 13",
+      "description": "A romantic story.",
+      "image": "https://via.placeholder.com/150?text=Video+13",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 14",
+      "description": "A thrilling adventure.",
+      "image": "https://via.placeholder.com/150?text=Video+14",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    },
+    {
+      "title": "Video 15",
+      "description": "A comedy show.",
+      "image": "https://via.placeholder.com/150?text=Video+15",
+      "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "category": "Myanmar"
+    }
+  ]
+}
