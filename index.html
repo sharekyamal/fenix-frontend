@@ -19,6 +19,14 @@
       margin-left: auto;
       margin-right: auto;
     }
+    @media (min-width: 768px) {
+      body {
+        max-width: 1200px; /* Desktop မှာ ပိုကျယ်အောင် လုပ်ထားပါတယ် */
+      }
+      .content-grid {
+        grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
+      }
+    }
     header {
       text-align: center;
       padding: 10px 0;
@@ -42,22 +50,6 @@
       margin: 10px 0;
       font-size: 18px;
     }
-    .category-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .category-item {
-      background-color: #333;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .category-item.active {
-      background-color: #555;
-    }
     .content-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -80,6 +72,12 @@
       padding: 5px;
       text-align: center;
       font-size: 12px;
+    }
+    .content-item .category {
+      padding: 0 5px 5px;
+      text-align: center;
+      font-size: 10px;
+      color: #ccc;
     }
     .play-button {
       position: absolute;
@@ -154,6 +152,7 @@
     }
     #video-player-section {
       display: none;
+      position: relative;
     }
     .description {
       font-size: 12px;
@@ -189,17 +188,22 @@
     footer {
       position: fixed;
       bottom: 0;
-      left: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: 100%;
+      max-width: 480px; /* Mobile မှာ အလယ်မှာ ရှိအောင် */
       background-color: #2c2c2c;
       padding: 10px 0;
       text-align: center;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
       border-top-left-radius: 15px;
       border-top-right-radius: 15px;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    @media (min-width: 768px) {
+      footer {
+        max-width: 1200px; /* Desktop မှာ ပိုကျယ်အောင် */
+      }
     }
     .footer-nav {
       display: flex;
@@ -209,29 +213,82 @@
     .footer-nav a {
       color: #fff;
       text-decoration: none;
-      font-size: 24px; /* Icon အရွယ်အစားကို ကြီးအောင်လုပ်ထားပါတယ် */
+      font-size: 24px;
       display: flex;
       justify-content: center;
       align-items: center;
       width: 50px;
       height: 50px;
-      border-radius: 50%; /* အဝိုင်းပုံစံလေး လုပ်ထားပါတယ် */
+      border-radius: 50%;
       background-color: #444;
       transition: background-color 0.3s, transform 0.2s;
     }
     .footer-nav a:hover {
       background-color: #666;
-      transform: scale(1.1); /* Hover လုပ်တဲ့အခါ အနည်းငယ်ကြီးလာမယ် */
+      transform: scale(1.1);
     }
     .footer-nav a:active {
-      transform: scale(0.95); /* နှိပ်တဲ့အခါ အနည်းငယ်သေးသွားမယ် */
+      transform: scale(0.95);
     }
     .footer-nav i {
       font-size: 24px;
     }
+    #in-video-ad {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 10;
+      justify-content: center;
+      align-items: center;
+    }
+    .in-video-ad-content {
+      position: relative;
+      text-align: center;
+    }
+    .in-video-ad-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .skip-ad {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: #ff4444;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .ad-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+    .ad-toggle label {
+      font-size: 14px;
+      margin-right: 5px;
+    }
+    .ad-toggle input {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <!-- Ad Toggle -->
+  <div class="ad-toggle">
+    <label for="ad-toggle-checkbox">In-Video Ads:</label>
+    <input type="checkbox" id="ad-toggle-checkbox" checked>
+  </div>
+
   <header>
     <h1>Fenix</h1>
     <!-- Header Ad -->
@@ -242,7 +299,7 @@
 
   <!-- Home Section -->
   <div id="home-section">
-    <div class="category-list" id="category-list"></div>
+    <h2>All Posts</h2>
     <div id="video-grid" class="content-grid"></div>
     <!-- Pagination -->
     <div class="pagination" id="pagination"></div>
@@ -253,10 +310,19 @@
     <a href="#" class="back-button" onclick="showHomeSection(); return false;">Back</a>
     <h3 id="video-title"></h3>
     <div class="description" id="video-description"></div>
-    <video id="video-player" playsinline controls>
-      <source id="video-source" src="" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+    <div style="position: relative;">
+      <video id="video-player" playsinline controls>
+        <source id="video-source" src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <!-- In-Video Ad -->
+      <div id="in-video-ad">
+        <div class="in-video-ad-content">
+          <img src="https://via.placeholder.com/300x200?text=In-Video+Ad" alt="In-Video Ad">
+          <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
+        </div>
+      </div>
+    </div>
     <!-- Ad Below Video Player -->
     <div class="video-ad">
       <a href="https://example.com/ad1" target="_blank">
@@ -276,13 +342,13 @@
   <!-- Footer -->
   <footer>
     <div class="footer-nav">
-      <a href="#" onclick="navigateVideo('back'); return false;" title="Back">
+      <a href="#" onclick="history.back(); return false;" title="Back">
         <i class="fas fa-arrow-left"></i>
       </a>
       <a href="#" onclick="showHomeSection(); return false;" title="Home">
         <i class="fas fa-home"></i>
       </a>
-      <a href="#" onclick="navigateVideo('forward'); return false;" title="Forward">
+      <a href="#" onclick="history.forward(); return false;" title="Forward">
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
@@ -294,8 +360,7 @@
     const ITEMS_PER_PAGE = 12; // 3x4 grid = 12 items per page
     let currentPage = 1;
     let allVideos = [];
-    let currentCategory = null;
-    let currentVideoIndex = -1;
+    let inVideoAdTimer;
 
     // Plyr Player ကို Initialize လုပ်ပါ
     const player = new Plyr('#video-player', {
@@ -323,53 +388,13 @@
         }
         allVideos = await response.json();
         console.log('Videos from data.json:', allVideos);
-        displayCategories();
+        displayVideos();
+        setupPagination();
       } catch (error) {
         console.error('Error fetching videos:', error);
         const videoGrid = document.getElementById('video-grid');
         videoGrid.innerHTML = '<div class="error-message">ဗီဒီယိုများကို မဖွင့်နိုင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်ကြိုးစားပါ။</div>';
       }
-    }
-
-    function displayCategories() {
-      const categoryList = document.getElementById('category-list');
-      categoryList.innerHTML = '';
-
-      // ထပ်တူ category တွေကို ဖယ်ထုတ်ပြီး unique categories တွေကို ရယူမယ်
-      const categories = [...new Set(allVideos.map(video => video.category))];
-
-      categories.forEach(category => {
-        const categoryItem = document.createElement('div');
-        categoryItem.className = 'category-item';
-        categoryItem.textContent = category;
-        categoryItem.onclick = () => {
-          currentCategory = category;
-          currentPage = 1;
-          updateCategorySelection();
-          displayVideos();
-          setupPagination();
-        };
-        categoryList.appendChild(categoryItem);
-      });
-
-      // Default အနေနဲ့ ပထမဆုံး category ကို ရွေးထားမယ်
-      if (categories.length > 0) {
-        currentCategory = categories[0];
-        updateCategorySelection();
-        displayVideos();
-        setupPagination();
-      }
-    }
-
-    function updateCategorySelection() {
-      const categoryItems = document.querySelectorAll('.category-item');
-      categoryItems.forEach(item => {
-        if (item.textContent === currentCategory) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
     }
 
     function displayVideos() {
@@ -379,8 +404,7 @@
       const start = (currentPage - 1) * ITEMS_PER_PAGE;
       const end = start + ITEMS_PER_PAGE;
 
-      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
-      const videosToShow = videosInCategory.slice(start, end);
+      const videosToShow = allVideos.slice(start, end);
 
       videosToShow.forEach((item, index) => {
         const videoItem = document.createElement('div');
@@ -389,11 +413,11 @@
           <img src="${item.image}" alt="${item.title}">
           <button class="play-button">Play</button>
           <div class="title">${item.title}</div>
+          <div class="category">${item.category}</div>
         `;
         const playButton = videoItem.querySelector('.play-button');
         playButton.onclick = (e) => {
           e.stopPropagation();
-          currentVideoIndex = start + index;
           showPopupAd(() => {
             playVideo(item);
           });
@@ -403,8 +427,7 @@
     }
 
     function setupPagination() {
-      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
-      const totalPages = Math.ceil(videosInCategory.length / ITEMS_PER_PAGE);
+      const totalPages = Math.ceil(allVideos.length / ITEMS_PER_PAGE);
       const pagination = document.getElementById('pagination');
       pagination.innerHTML = '';
 
@@ -479,29 +502,47 @@
           }
         ]
       };
+
+      // In-Video Ad Logic
+      const adToggle = document.getElementById('ad-toggle-checkbox');
+      if (adToggle.checked) {
+        showInVideoAd();
+      } else {
+        player.play();
+      }
+    }
+
+    function showInVideoAd() {
+      const inVideoAd = document.getElementById('in-video-ad');
+      const skipAdButton = document.querySelector('.skip-ad');
+      inVideoAd.style.display = 'flex';
+      player.pause();
+
+      setTimeout(() => {
+        skipAdButton.style.display = 'block';
+      }, 10000); // 10 စက္ကန့်ပြီးရင် Skip Ad ခလုတ်ပေါ်မယ်
+    }
+
+    function skipInVideoAd() {
+      const inVideoAd = document.getElementById('in-video-ad');
+      inVideoAd.style.display = 'none';
+      const skipAdButton = document.querySelector('.skip-ad');
+      skipAdButton.style.display = 'none';
       player.play();
     }
 
     function showHomeSection() {
       const homeSection = document.getElementById('home-section');
       const videoPlayerSection = document.getElementById('video-player-section');
+      const inVideoAd = document.getElementById('in-video-ad');
+      const skipAdButton = document.querySelector('.skip-ad');
 
       // Show home section, hide video player section
       homeSection.style.display = 'block';
       videoPlayerSection.style.display = 'none';
+      inVideoAd.style.display = 'none';
+      skipAdButton.style.display = 'none';
       player.pause();
-      currentVideoIndex = -1;
-    }
-
-    function navigateVideo(direction) {
-      const videosInCategory = allVideos.filter(video => video.category === currentCategory);
-      if (direction === 'back' && currentVideoIndex > 0) {
-        currentVideoIndex--;
-        playVideo(videosInCategory[currentVideoIndex]);
-      } else if (direction === 'forward' && currentVideoIndex < videosInCategory.length - 1) {
-        currentVideoIndex++;
-        playVideo(videosInCategory[currentVideoIndex]);
-      }
     }
 
     window.onload = () => {
