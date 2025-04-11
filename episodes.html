@@ -3,280 +3,331 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Episodes</title>
-  <link rel="stylesheet" href="all.min.css">
-  <!-- Plyr CSS -->
+  <title>Content</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #1a1a1a;
-      color: #fff;
+      color: white;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      padding-bottom: 60px;
     }
-    h1, h2 {
+    .container {
+      padding: 10px;
+    }
+    .header {
+      font-size: 20px;
+      margin-bottom: 20px;
       text-align: center;
+      color: #ffcc00;
     }
-    #player-container {
-      max-width: 800px;
-      margin: 0 auto;
+    .video-player {
+      margin-bottom: 20px;
+      text-align: center;
     }
     .plyr {
-      border-radius: 8px;
-    }
-    .description {
       max-width: 800px;
-      margin: 10px auto;
-      font-size: 14px;
-      color: #ccc;
-      text-align: center;
+      margin: 0 auto;
+      border-radius: 10px;
     }
-    .ad-banner {
-      background-color: #333;
-      padding: 10px;
-      text-align: center;
-      margin: 10px auto;
-      border-radius: 5px;
-      max-width: 800px;
-    }
-    .ad-banner img {
-      max-width: 100%;
-      height: auto;
-    }
-    #episode-list {
+    .episode-list {
       margin-top: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
+    }
+    .episode-list h2 {
+      font-size: 18px;
+      color: #ffcc00;
+      margin-bottom: 20px;
+    }
+    .episode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
     }
     .episode-item {
-      cursor: pointer;
-      padding: 10px;
       background-color: #333;
-      margin: 5px 0;
+      padding: 10px;
       border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.3s;
     }
     .episode-item:hover {
-      background-color: #444;
+      transform: scale(1.05);
     }
-    #popup-ad {
+    .episode-item p {
+      margin: 0;
+      font-size: 14px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #333;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+    }
+    .footer button {
+      background-color: #555;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .footer button:hover {
+      background-color: #777;
+    }
+    .plyr__control--rewind, .plyr__control--fast-forward {
+      font-size: 16px;
+      padding: 8px;
+    }
+    @media (max-width: 768px) {
+      .episode-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .episode-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    /* Added for Ad Banner */
+    .ad-banner {
+      width: 100%;
+      max-width: 728px;
+      height: 90px;
+      background-color: #444;
+      margin: 10px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    /* Added for Description */
+    .description {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #333;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    /* Added for Pop-up Ad */
+    .popup-ad {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
     }
-    .ad-content {
-      background-color: #fff;
+    .popup-ad-content {
+      background-color: #444;
       padding: 20px;
-      border-radius: 5px;
+      border-radius: 10px;
       text-align: center;
-      position: relative;
+      max-width: 80%;
     }
-    .ad-content img {
-      max-width: 300px;
-      height: auto;
-    }
-    .ad-timer {
-      margin-top: 10px;
+    .popup-ad-content p {
       font-size: 16px;
-      color: #333;
+      margin-bottom: 10px;
     }
-    .skip-ad {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff4444;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      cursor: pointer;
+    .countdown {
+      font-size: 18px;
+      color: #ffcc00;
     }
   </style>
 </head>
 <body>
-  <h1 id="content-title">Loading...</h1>
-  <div id="player-container">
-    <video id="video-player" playsinline controls>
-      <source id="video-source" src="" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
-  <div class="description" id="content-description">Loading description...</div>
-  <!-- Ad Banner below Player -->
-  <div class="ad-banner">
-    <img src="https://via.placeholder.com/728x90?text=Player+Ad" alt="Player Ad">
-  </div>
-  <h2>Episodes</h2>
-  <div id="episode-list"></div>
+  <div class="container">
+    <div class="header" id="content-title"></div>
 
-  <!-- Popup Ad -->
-  <div id="popup-ad">
-    <div class="ad-content">
-      <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
-      <div class="ad-timer">Ad will close in <span id="ad-timer">5</span> seconds</div>
-      <button class="skip-ad" onclick="skipAd()">Skip Ad</button>
+    <div class="video-player" id="videoPlayer">
+      <video id="player" playsinline controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <!-- Added Ad Banner Below Player -->
+    <div class="ad-banner">Banner Advertisement (728x90)</div>
+
+    <!-- Added Description -->
+    <div class="description" id="content-description"></div>
+
+    <div class="episode-list" id="episode-list">
+      <h2>Episodes</h2>
+      <div class="episode-grid" id="episode-grid">
+        <!-- Episode items will be added dynamically -->
+      </div>
     </div>
   </div>
 
-  <!-- Plyr JavaScript -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <!-- Added Pop-up Ad -->
+  <div class="popup-ad" id="popup-ad">
+    <div class="popup-ad-content">
+      <p>Advertisement</p>
+      <p class="countdown" id="countdown">5</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
+    <button onclick="window.location.href='index.html'"><i class="fas fa-home"></i></button>
+    <button onclick="window.history.forward()"><i class="fas fa-arrow-right"></i></button>
+  </div>
+
   <script>
-    const API_URL = 'https://fenix-backend-iae6.onrender.com';
-
-    // URL ကနေ contentId နဲ့ type ကို ယူပါ
-    const urlParams = new URLSearchParams(window.location.search);
-    const contentId = urlParams.get('contentId');
-    const contentType = urlParams.get('type');
-
-    // Plyr Player ကို Initialize လုပ်ပါ
-    const player = new Plyr('#video-player', {
+    // Initialize Plyr player with custom controls
+    const player = new Plyr('#player', {
       controls: [
-        'play-large', // The large play button in the center
-        'rewind', // Rewind button (default 10 seconds)
-        'play', // Play/pause playback
-        'fast-forward', // Fast forward button (default 10 seconds)
-        'progress', // The progress bar and scrubber
-        'current-time', // The current time of playback
-        'duration', // The full duration of the video
-        'mute', // Toggle mute
-        'volume', // Volume control
-        'settings', // Settings menu
-        'fullscreen' // Toggle fullscreen
+        'play-large',
+        'rewind',
+        'play',
+        'fast-forward',
+        'progress',
+        'current-time',
+        'duration',
+        'mute',
+        'volume',
+        'settings',
+        'pip',
+        'airplay',
+        'fullscreen',
       ],
-      seekTime: 10 // Backward နဲ့ Forward အတွက် 10 စက္ကန့် သတ်မှတ်ထားပါတယ်
+      settings: ['captions', 'quality', 'speed', 'loop'],
+      seekTime: 5,
     });
 
-    async function fetchContentDetails() {
-      try {
-        const response = await fetch(`${API_URL}/api/${contentType}s/${contentId}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${contentType} details: ${response.status}`);
-        }
-        const content = await response.json();
-        console.log('Content Details:', content); // Debug လုပ်ဖို့
-
-        // Title နဲ့ Description ကို ပြပါ
-        const titleElement = document.getElementById('content-title');
-        titleElement.textContent = content.title || 'Untitled';
-        const descriptionElement = document.getElementById('content-description');
-        descriptionElement.textContent = content.description || 'A romantic love story series.';
-
-        // Video URL ကို သတ်မှတ်ပါ
-        const videoSource = document.getElementById('video-source');
-        if (content.videoUrl) {
-          videoSource.src = content.videoUrl;
-          player.source = {
-            type: 'video',
-            sources: [
-              {
-                src: videoSource.src,
-                type: 'video/mp4'
-              }
-            ]
-          };
-        } else {
-          alert('No video URL found in the API response. Please add videoUrl field in the backend API.');
-          videoSource.src = ''; // Video URL မရှိရင် ဘာမှ မဖွင့်ပါ
-        }
-      } catch (error) {
-        console.error(`Error fetching ${contentType} details:`, error);
-        alert(`Error fetching ${contentType} details: ${error.message}`);
-        const titleElement = document.getElementById('content-title');
-        titleElement.textContent = 'Error Loading Content';
-        const descriptionElement = document.getElementById('content-description');
-        descriptionElement.textContent = 'Unable to load description.';
-        const videoSource = document.getElementById('video-source');
-        videoSource.src = ''; // Error ဖြစ်ရင် ဘာမှ မဖွင့်ပါ
-      }
-    }
-
-    async function fetchEpisodes() {
-      try {
-        const response = await fetch(`${API_URL}/api/${contentType}s/${contentId}/episodes`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch episodes: ${response.status}`);
-        }
-        const episodes = await response.json();
-        console.log('Episodes:', episodes); // Debug လုပ်ဖို့
-
-        const episodeList = document.getElementById('episode-list');
-        episodeList.innerHTML = ''; // Clear existing content
-        episodes.forEach(episode => {
-          const episodeItem = document.createElement('div');
-          episodeItem.className = 'episode-item';
-          episodeItem.textContent = episode.title || `Episode ${episode.id}`;
-          episodeItem.onclick = () => {
-            if (episode.videoUrl) {
-              showPopupAd(() => {
-                const videoSource = document.getElementById('video-source');
-                videoSource.src = episode.videoUrl;
-                player.source = {
-                  type: 'video',
-                  sources: [
-                    {
-                      src: videoSource.src,
-                      type: 'video/mp4'
-                    }
-                  ]
-                };
-                player.play();
-              });
-            } else {
-              alert('No video URL found for this episode. Please add videoUrl field in the backend API.');
-            }
-          };
-          episodeList.appendChild(episodeItem);
-        });
-      } catch (error) {
-        console.error('Error fetching episodes:', error);
-        alert('No episodes found. Please add /api/series/:id/episodes endpoint in the backend API.');
-        const episodeList = document.getElementById('episode-list');
-        episodeList.innerHTML = ''; // Clear existing content
-      }
-    }
-
+    // Pop-up Ad Logic
     function showPopupAd(callback) {
-      const popupAd = document.getElementById('popup-ad');
-      const adTimerElement = document.getElementById('ad-timer');
+      const popupAd = document.getElementById("popup-ad");
+      const countdownEl = document.getElementById("countdown");
       let timeLeft = 5;
 
-      popupAd.style.display = 'flex';
-      adTimerElement.textContent = timeLeft;
+      popupAd.style.display = "flex";
+      countdownEl.textContent = timeLeft;
 
-      const timer = setInterval(() => {
+      const countdown = setInterval(() => {
         timeLeft--;
-        adTimerElement.textContent = timeLeft;
+        countdownEl.textContent = timeLeft;
         if (timeLeft <= 0) {
-          clearInterval(timer);
-          popupAd.style.display = 'none';
+          clearInterval(countdown);
+          popupAd.style.display = "none";
           callback();
         }
       }, 1000);
-
-      window.skipAd = () => {
-        clearInterval(timer);
-        popupAd.style.display = 'none';
-        callback();
-      };
     }
 
-    // Page ဖွင့်တာနဲ့ အသေးစိတ်အချက်အလက်နဲ့ episodes တွေကို ခေါ်ပါ
-    window.onload = () => {
-      if (!contentId || !contentType) {
-        alert('Invalid content ID or type');
-        return;
+    // Fetch content data from Backend API
+    async function fetchContentData(contentId, type) {
+      try {
+        const response = await fetch(`https://fenix-backend-iae6.onrender.com/${type}s/${contentId}`);
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching content:', error);
+        // Fallback to original sample data
+        const contentData = {
+          series: {
+            1: [
+              { title: "Episode 1", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%201.mp4" },
+              { title: "Episode 2", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%202.mp4" },
+              { title: "Episode 3", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%203.mp4" },
+              { title: "Episode 4", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%204.mp4" },
+              { title: "Episode 5", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%205.mp4" },
+              { title: "Episode 6", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%206.mp4" },
+              { title: "Episode 7", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%207.mp4" },
+              { title: "Episode 8", url: "https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Flower/%E1%80%84%E1%80%9A%E1%80%BA%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%A5%E1%80%AE%E1%80%B8%E1%80%9B%E1%80%B2%E1%80%B7%20%E1%80%81%E1%80%BB%E1%80%85%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%95%E1%80%BC%E1%80%84%E1%80%BA%20EP%20-%208.mp4" },
+            ],
+            2: [
+              { title: "Episode 1", url: "https://example.com/series2/ep1.mp4" },
+              { title: "Episode 2", url: "https://example.com/series2/ep2.mp4" },
+            ],
+          },
+          movies: {
+            3: [{ title: "Gabbar Is Back (2015)", url: "https://zawm1.zawgyiofficer.workers.dev/download.aspx?file=sLmlGGa7rHYAPzZmJBwkrx1%2BBtDI4vgyuIx%2BQYnRtkz2Oqbj6Vnd2XtaGizbCciS&expiry=own8sXacKHcQkvEQBlSatg%3D%3D&mac=658aefc121ca9b0ce8a7583f0f36174199d71a8a807bc816002714ead8db453b" }],
+            4: [{ title: "Kingdom of the Planet of the Apes (2024)", url: "https://zawm1.zawgyiofficer.workers.dev/download.aspx?file=j4EYpqHOLjm%2FF89ul83AqqZBz96ja6vYaTgJZZNVMzYTELhrHoXWd1V3F9wUcFpq&expiry=j39kKJne4rj4996uwL7fEA%3D%3D&mac=f2ebb8f223b26ba57bbf9df382beed053fb7cba3e002db934b11677690955e11" }],
+          },
+        };
+        const contentTitles = {
+          1: "Love Story",
+          2: "Love Story",
+          3: "Gabbar Is Back (2015)",
+          4: "Kingdom of the Planet of the Apes (2024)",
+        };
+        return {
+          data: contentData[type + 's'][contentId],
+          title: contentTitles[contentId] || "Unknown Content",
+          description: "This is a fallback description for " + (contentTitles[contentId] || "Unknown Content"),
+        };
       }
-      fetchContentDetails();
-      fetchEpisodes();
-    };
+    }
+
+    // Get content ID and type from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentId = urlParams.get("contentId");
+    const type = urlParams.get("type");
+
+    // Set content title and description
+    async function loadContent() {
+      const content = await fetchContentData(contentId, type);
+      document.getElementById("content-title").textContent = content.title;
+      document.getElementById("content-description").textContent = content.description || "No description available.";
+
+      const data = content.data;
+      const episodeList = document.getElementById("episode-list");
+      const episodeGrid = document.getElementById("episode-grid");
+      const videoSource = document.getElementById("videoSource");
+
+      if (type === "movie") {
+        episodeList.style.display = "none";
+        showPopupAd(() => {
+          videoSource.src = data[0].url;
+          player.source = {
+            type: 'video',
+            sources: [{ src: data[0].url, type: 'video/mp4' }],
+          };
+          player.play();
+        });
+      } else {
+        data.forEach(episode => {
+          const episodeItem = document.createElement("div");
+          episodeItem.className = "episode-item";
+          episodeItem.innerHTML = `<p>${episode.title}</p>`;
+          episodeItem.onclick = () => {
+            showPopupAd(() => {
+              videoSource.src = episode.url;
+              player.source = {
+                type: 'video',
+                sources: [{ src: episode.url, type: 'video/mp4' }],
+              };
+              player.play();
+            });
+          };
+          episodeGrid.appendChild(episodeItem);
+        });
+      }
+    }
+
+    // Telegram WebApp initialization
+    window.Telegram.WebApp.ready();
+    loadContent();
   </script>
 </body>
 </html>
