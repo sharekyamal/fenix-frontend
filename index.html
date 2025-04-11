@@ -218,7 +218,7 @@
     }
     .footer-nav {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
     }
     .footer-nav a {
@@ -262,13 +262,36 @@
     .in-video-ad-content video {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: contain; /* Responsive ဖြစ်အောင် */
     }
-    .skip-ad {
-      display: none;
+    .ad-info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    .ad-timer-skip {
       position: absolute;
       bottom: 20px;
       right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .ad-timer-skip .ad-timer {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    .skip-ad {
+      display: none;
       background-color: #ff4444;
       color: #fff;
       padding: 5px 10px;
@@ -314,7 +337,11 @@
               <source id="in-video-ad-source" src="" type="video/mp4">
               Your browser does not support the video tag.
             </video>
-            <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
+            <div class="ad-info">Sponsored</div>
+            <div class="ad-timer-skip">
+              <div class="ad-timer">Ad ends in <span id="in-video-ad-timer">10</span> seconds</div>
+              <a href="#" class="skip-ad" onclick="skipInVideoAd(); return false;">Skip Ad</a>
+            </div>
           </div>
         </div>
       </div>
@@ -336,16 +363,10 @@
   </div>
 
   <!-- Footer -->
-  <footer>
+  <footer id="footer">
     <div class="footer-nav">
-      <a href="#" onclick="goBack(); return false;" title="Back">
-        <i class="fas fa-arrow-left"></i>
-      </a>
       <a href="#" onclick="showHomeSection(); return false;" title="Home">
         <i class="fas fa-home"></i>
-      </a>
-      <a href="#" onclick="goForward(); return false;" title="Forward">
-        <i class="fas fa-arrow-right"></i>
       </a>
     </div>
   </footer>
@@ -358,6 +379,7 @@
     let allVideos = [];
     let data = {};
     let inVideoAdPlayer;
+    let adTimerInterval;
 
     // Plyr Player ကို Initialize လုပ်ပါ
     const player = new Plyr('#video-player', {
@@ -500,10 +522,12 @@
       const videoSource = document.getElementById('video-source');
       const videoTitle = document.getElementById('video-title');
       const videoDescription = document.getElementById('video-description');
+      const footer = document.getElementById('footer');
 
-      // Show video player section, hide home section
+      // Show video player section, hide home section and footer
       homeSection.style.display = 'none';
       videoPlayerSection.style.display = 'block';
+      footer.style.display = 'none';
 
       // Set video details
       videoTitle.textContent = item.title;
@@ -531,6 +555,9 @@
       const inVideoAd = document.getElementById('in-video-ad');
       const inVideoAdSource = document.getElementById('in-video-ad-source');
       const skipAdButton = document.querySelector('.skip-ad');
+      const adTimerElement = document.getElementById('in-video-ad-timer');
+      let timeLeft = 10;
+
       inVideoAd.style.display = 'block';
       player.pause();
 
@@ -547,9 +574,16 @@
       };
       inVideoAdPlayer.play();
 
-      setTimeout(() => {
-        skipAdButton.style.display = 'block';
-      }, 10000); // 10 စက္ကန့်ပြီးရင် Skip Ad ခလုတ်ပေါ်မယ်
+      // Timer for in-video ad
+      adTimerElement.textContent = timeLeft;
+      adTimerInterval = setInterval(() => {
+        timeLeft--;
+        adTimerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(adTimerInterval);
+          skipAdButton.style.display = 'block';
+        }
+      }, 1000);
     }
 
     function skipInVideoAd() {
@@ -557,6 +591,7 @@
       const skipAdButton = document.querySelector('.skip-ad');
       inVideoAd.style.display = 'none';
       skipAdButton.style.display = 'none';
+      clearInterval(adTimerInterval);
       inVideoAdPlayer.pause();
       player.play();
     }
@@ -566,22 +601,17 @@
       const videoPlayerSection = document.getElementById('video-player-section');
       const inVideoAd = document.getElementById('in-video-ad');
       const skipAdButton = document.querySelector('.skip-ad');
+      const footer = document.getElementById('footer');
 
-      // Show home section, hide video player section
+      // Show home section, hide video player section, show footer
       homeSection.style.display = 'block';
       videoPlayerSection.style.display = 'none';
       inVideoAd.style.display = 'none';
       skipAdButton.style.display = 'none';
+      footer.style.display = 'block';
       player.pause();
       if (inVideoAdPlayer) inVideoAdPlayer.pause();
-    }
-
-    function goBack() {
-      history.back();
-    }
-
-    function goForward() {
-      history.forward();
+      clearInterval(adTimerInterval);
     }
 
     window.onload = () => {
