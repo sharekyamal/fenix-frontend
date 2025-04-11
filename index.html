@@ -191,14 +191,15 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: #333;
+      background-color: #2c2c2c;
       padding: 10px 0;
       text-align: center;
       max-width: 480px;
       margin-left: auto;
       margin-right: auto;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
     }
     .footer-nav {
       display: flex;
@@ -208,20 +209,25 @@
     .footer-nav a {
       color: #fff;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 24px; /* Icon အရွယ်အစားကို ကြီးအောင်လုပ်ထားပါတယ် */
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      gap: 5px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%; /* အဝိုင်းပုံစံလေး လုပ်ထားပါတယ် */
+      background-color: #444;
+      transition: background-color 0.3s, transform 0.2s;
     }
     .footer-nav a:hover {
-      background-color: #555;
+      background-color: #666;
+      transform: scale(1.1); /* Hover လုပ်တဲ့အခါ အနည်းငယ်ကြီးလာမယ် */
+    }
+    .footer-nav a:active {
+      transform: scale(0.95); /* နှိပ်တဲ့အခါ အနည်းငယ်သေးသွားမယ် */
     }
     .footer-nav i {
-      font-size: 18px;
+      font-size: 24px;
     }
   </style>
 </head>
@@ -270,17 +276,14 @@
   <!-- Footer -->
   <footer>
     <div class="footer-nav">
-      <a href="#" onclick="navigateVideo('back'); return false;">
+      <a href="#" onclick="navigateVideo('back'); return false;" title="Back">
         <i class="fas fa-arrow-left"></i>
-        <span>Back</span>
       </a>
-      <a href="#" onclick="showHomeSection(); return false;">
+      <a href="#" onclick="showHomeSection(); return false;" title="Home">
         <i class="fas fa-home"></i>
-        <span>Home</span>
       </a>
-      <a href="#" onclick="navigateVideo('forward'); return false;">
+      <a href="#" onclick="navigateVideo('forward'); return false;" title="Forward">
         <i class="fas fa-arrow-right"></i>
-        <span>Forward</span>
       </a>
     </div>
   </footer>
