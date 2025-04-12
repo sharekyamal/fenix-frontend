@@ -185,6 +185,35 @@
       font-size: 14px;
       cursor: pointer;
     }
+    #popup-ad {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .ad-content {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      position: relative;
+      max-width: 90%;
+    }
+    .ad-content img {
+      max-width: 100%;
+      height: auto;
+    }
+    .ad-timer {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -227,6 +256,14 @@
       <!-- Related Videos -->
       <h2>Related Videos</h2>
       <div id="related-videos" class="related-videos-grid"></div>
+    </div>
+
+    <!-- Popup Ad -->
+    <div id="popup-ad">
+      <div class="ad-content">
+        <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
+        <div class="ad-timer">ခဏစောင့်ပါ <span id="ad-timer">5</span> စက္ကန့်</div>
+      </div>
     </div>
   </div>
 
@@ -325,10 +362,10 @@
       const relatedVideosGrid = document.getElementById('related-videos');
       relatedVideosGrid.innerHTML = '';
 
-      // Filter out the current video and get a random selection of 3 videos
+      // Filter out the current video and get a random selection of 6 videos
       const otherVideos = allVideos.filter(video => video.id !== currentVideoId);
       const shuffledVideos = otherVideos.sort(() => 0.5 - Math.random());
-      const relatedVideos = shuffledVideos.slice(0, 3);
+      const relatedVideos = shuffledVideos.slice(0, 6); // 6 ခု ပြမယ်
 
       relatedVideos.forEach(item => {
         const videoItem = document.createElement('div');
@@ -342,7 +379,9 @@
         const playButton = videoItem.querySelector('.play-button');
         playButton.onclick = (e) => {
           e.stopPropagation();
-          window.location.href = `player.html?videoId=${item.id}`;
+          showPopupAd(() => {
+            window.location.href = `player.html?videoId=${item.id}`;
+          });
         };
         relatedVideosGrid.appendChild(videoItem);
       });
@@ -395,6 +434,25 @@
       clearInterval(adTimerInterval);
       inVideoAdPlayer.pause();
       player.play();
+    }
+
+    function showPopupAd(callback) {
+      const popupAd = document.getElementById('popup-ad');
+      const adTimerElement = document.getElementById('ad-timer');
+      let timeLeft = 5;
+
+      popupAd.style.display = 'flex';
+      adTimerElement.textContent = timeLeft;
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        adTimerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          popupAd.style.display = 'none';
+          callback();
+        }
+      }, 1000);
     }
 
     window.onload = () => {
