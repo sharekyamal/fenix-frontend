@@ -33,8 +33,6 @@
       padding: 10px 0;
     }
     .ad-banner {
-      background-color: #333;
-      padding: 10px;
       text-align: center;
       margin: 10px 0;
       border-radius: 5px;
@@ -68,8 +66,14 @@
       width: 100%;
       height: auto;
       display: block;
-      aspect-ratio: 16 / 9; /* Image တွေကို တစ်ပုံစံတည်း ဖြစ်အောင် */
+      aspect-ratio: 4 / 3; /* Image ကို ပိုကြီးပေါ်အောင် ပြောင်းထားပါတယ် */
       object-fit: cover;
+      max-height: 200px; /* Mobile မှာ အမြင့်ကို ကန့်သတ်ထားပါတယ် */
+    }
+    @media (min-width: 768px) {
+      .content-item img {
+        max-height: 300px; /* Desktop မှာ ပိုကြီးအောင် လုပ်ထားပါတယ် */
+      }
     }
     .content-item .title {
       padding: 5px;
@@ -102,7 +106,7 @@
     .pagination {
       text-align: center;
       margin-top: 20px;
-      margin-bottom: 20px; /* Footer မရှိတော့လို့ margin ကို ပြန်ချိန်ညှိထားပါတယ် */
+      margin-bottom: 20px;
     }
     .pagination a {
       color: #fff;
@@ -162,10 +166,8 @@
       <h1>Fenix</h1>
       <!-- Header Ad -->
       <div class="ad-banner">
-      <a href="https://google.com" target="_blank">
-        <img src="https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Place-your-ad-here.gif" alt="Header Ad">
-      </a>
-    </div>
+        <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
+      </div>
     </header>
 
     <!-- Home Section -->
@@ -179,9 +181,7 @@
     <!-- Popup Ad -->
     <div id="popup-ad">
       <div class="ad-content">
-        <a href="https://google.com" target="_blank">
-        <img src="https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Place-your-ad-here.gif" alt="Header Ad">
-      </a>
+        <img src="https://via.placeholder.com/300x250?text=Popup+Ad" alt="Popup Ad">
         <div class="ad-timer">ခဏစောင့်ပါ <span id="ad-timer">5</span> စက္ကန့်</div>
       </div>
     </div>
