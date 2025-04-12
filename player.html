@@ -23,11 +23,8 @@
       padding: 10px;
     }
     @media (min-width: 768px) {
-      .container {
-        max-width: 1200px; /* Desktop မှာ ပိုကျယ်အောင် လုပ်ထားပါတယ် */
-      }
       .related-videos-grid {
-        grid-template-columns: repeat(4, 1fr); /* Desktop မှာ 4 ကော်လံ ပြမယ် */
+        grid-template-columns: repeat(3, 1fr); /* Desktop မှာလည်း mobile view နဲ့ တူအောင် 3 ကော်လံပဲ ထားမယ် */
       }
     }
     header {
@@ -73,13 +70,13 @@
       width: 100%;
       height: auto;
       display: block;
-      aspect-ratio: 4 / 3; /* Image ကို ပိုကြီးပေါ်အောင် ပြောင်းထားပါတယ် */
+      aspect-ratio: 4 / 3;
       object-fit: cover;
-      max-height: 200px; /* Mobile မှာ အမြင့်ကို ကန့်သတ်ထားပါတယ် */
+      max-height: 200px;
     }
     @media (min-width: 768px) {
       .content-item img {
-        max-height: 300px; /* Desktop မှာ ပိုကြီးအောင် လုပ်ထားပါတယ် */
+        max-height: 300px;
       }
     }
     .content-item .title {
@@ -147,8 +144,9 @@
     #in-video-ad {
       display: none;
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 100%;
       height: 100%;
       background-color: #000;
@@ -158,11 +156,14 @@
       position: relative;
       width: 100%;
       height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .in-video-ad-content video {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Responsive ဖြစ်အောင် */
+      object-fit: cover; /* 9:16 အချိုးအစားရှိတဲ့ video တွေအတွက် အဆင်ပြေအောင် */
     }
     .ad-info {
       position: absolute;
@@ -236,9 +237,7 @@
     <header>
       <h1>Fenix</h1>
       <div class="ad-banner">
-        <a href="https://example.com/ad1" target="_blank">
-        <img src="https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Place-your-ad-here.gif" alt="Header Ad">
-      </a>
+        <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
       </div>
     </header>
 
@@ -269,9 +268,9 @@
       </div>
       <!-- Ad Below Video Player -->
       <div class="video-ad">
-       <a href="https://example.com/ad1" target="_blank">
-        <img src="https://pub-99397c9d94874e8cb89e4486ce624c15.r2.dev/Place-your-ad-here.gif" alt="Below Ad">
-      </a>
+        <a href="https://example.com/ad1" target="_blank">
+          <img src="https://via.placeholder.com/320x100?text=Ad+Below+Video" alt="Ad Below Video">
+        </a>
       </div>
       <!-- Related Videos -->
       <h2>Related Videos</h2>
@@ -371,6 +370,7 @@
       displayRelatedVideos(item.id);
 
       // In-Video Ad Logic
+      // Telegram Browser နဲ့ Telegram Mini App နှစ်ခုလုံးမှာ ပြဖို့ လိုအပ်တာမို့ ဒီ စစ်ဆေးမှုကို ဖယ်ထုတ်ပြီး data.showInVideoAd အတိုင်း ပြမယ်
       if (data.showInVideoAd) {
         showInVideoAd();
       } else {
@@ -422,17 +422,25 @@
       player.pause();
 
       // Set the in-video ad source
-      inVideoAdSource.src = data.inVideoAdUrl;
-      inVideoAdPlayer.source = {
-        type: 'video',
-        sources: [
-          {
-            src: inVideoAdSource.src,
-            type: 'video/mp4'
-          }
-        ]
-      };
-      inVideoAdPlayer.play();
+      if (data.inVideoAdUrl) {
+        inVideoAdSource.src = data.inVideoAdUrl;
+        inVideoAdPlayer.source = {
+          type: 'video',
+          sources: [
+            {
+              src: inVideoAdSource.src,
+              type: 'video/mp4'
+            }
+          ]
+        };
+        inVideoAdPlayer.play().catch(error => {
+          console.error('Error playing in-video ad:', error);
+          skipInVideoAd(); // Ad မဖွင့်နိုင်ရင် skip လုပ်လိုက်မယ်
+        });
+      } else {
+        console.error('In-video ad URL is not defined in data.json');
+        skipInVideoAd(); // Ad URL မရှိရင် skip လုပ်လိုက်မယ်
+      }
 
       // Timer for in-video ad
       adTimerElement.textContent = timeLeft;
