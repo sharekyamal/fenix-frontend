@@ -34,6 +34,15 @@
       text-align: center;
       padding: 10px 0;
     }
+    .ad-banner {
+      text-align: center;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .ad-banner img {
+      max-width: 100%;
+      height: auto;
+    }
     h1 {
       margin: 0;
       font-size: 24px;
@@ -51,7 +60,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 20px;
-      margin-bottom: 20px; /* Footer မရှိတော့လို့ margin ထည့်ထားပါတယ် */
+      margin-bottom: 20px;
     }
     .content-item {
       position: relative;
@@ -64,8 +73,14 @@
       width: 100%;
       height: auto;
       display: block;
-      aspect-ratio: 16 / 9; /* Image တွေကို တစ်ပုံစံတည်း ဖြစ်အောင် */
+      aspect-ratio: 4 / 3; /* Image ကို ပိုကြီးပေါ်အောင် ပြောင်းထားပါတယ် */
       object-fit: cover;
+      max-height: 200px; /* Mobile မှာ အမြင့်ကို ကန့်သတ်ထားပါတယ် */
+    }
+    @media (min-width: 768px) {
+      .content-item img {
+        max-height: 300px; /* Desktop မှာ ပိုကြီးအောင် လုပ်ထားပါတယ် */
+      }
     }
     .content-item .title {
       padding: 5px;
@@ -220,6 +235,9 @@
   <div class="container">
     <header>
       <h1>Fenix</h1>
+      <div class="ad-banner">
+        <img src="https://via.placeholder.com/320x50?text=Header+Ad" alt="Header Ad">
+      </div>
     </header>
 
     <!-- Video Player Section -->
